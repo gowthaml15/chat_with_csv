@@ -3,7 +3,7 @@ import streamlit as st
 import tempfile
 import shutil
 import pandas as pd
-import openai
+# import openai
 from langchain.agents import create_csv_agent
 from langchain.llms import OpenAI
 from dotenv import load_dotenv, find_dotenv
@@ -67,7 +67,6 @@ def main():
     open_ai_key = st.text_input("Enter Open AI Key")
     if open_ai_key is not None:
         # _ = load_dotenv(find_dotenv())
-        openai.api_key = open_ai_key
         # st.file_uploader("Upload your CSV file",type="csv")
         uploaded_file = st.file_uploader("Upload your CSV file",type="csv")
         
@@ -141,24 +140,25 @@ def main():
                         """
                         + question
                     )
-                
-            llms = OpenAI(temperature=0)
+            data = pd.read_csv(destination_path)
+            st.write(data.head(3))
+            llms = OpenAI(temperature=0,openai_api_key=open_ai_key)
             if question is not None and question != "":
                 st.write(f"Your question was:{question}")
                 
                 if "Plot" in selected_option:
-                    print("---->inside plot")
-                    data = pd.read_csv(destination_path)
-                    llm = OpenAI(temperature=0.0)
+                    # print("---->inside plot")
+                    
+                    llm = OpenAI(temperature=0.0,openai_api_key=open_ai_key)
                     pandas_ai = PandasAI(llm)
-                    print(data.head())
+                    # print(data.head())
                     st.write(pandas_ai.run(data,prompt=question))
                     # write_answer(json.loads(str(response)))
                 else:
                     agent = create_csv_agent(
                         llms,
                         destination_path,
-                        verbose=True,
+                        # verbose=True,
                     )
                     response = agent.run(query)
                     st.write(response)
@@ -167,3 +167,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
