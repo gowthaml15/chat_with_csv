@@ -99,7 +99,7 @@ def main():
             if "Data Analyst" in selected_option:
                 query = f""" 
                             As a data analyst, you have been assigned the task of analyzing a dataset and providing insightful findings and recommendations based on your analysis. Summarize your key insights and recommendations in a clear and concise manner, avoiding technical jargon or specific programming code.
-
+                            If you find a date column read it like dd/mm/yy then and the Query
                             Query: {question}
                             """
             elif "Sales Person" in selected_option:

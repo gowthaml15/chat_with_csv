@@ -2,3 +2,4 @@ langchain
 pandasai
 openai
 tabulate
+streanlit-chat
