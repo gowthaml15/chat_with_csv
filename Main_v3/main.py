@@ -105,60 +105,62 @@ def explainer(ll=None,question="", answer="", columns=""):
     return response
 
 def main():
-    load_dotenv()
-    API_KEY = os.environ['OPENAI_API_KEY']
-    openai.api_key = API_KEY
+    st.set_page_config(page_title = "Ask you CSV")
+    st.header("Ask you CSV")
+    open_ai_key = st.text_input("Enter Open AI Key")
+    if open_ai_key:
+        openai.api_key = open_ai_key
 
-    llm = OpenAI(temperature=0)
-    pandas_ai = PandasAI(llm,verbose=True,enable_cache=False)
+        llm = OpenAI(temperature=0)
+        pandas_ai = PandasAI(llm,verbose=True,enable_cache=False)
 
-    st.title("Prompt-driven Analysis by Pandas AI")
+        st.title("Prompt-driven Analysis by Pandas AI")
 
 
 
-    multiple_files = st.file_uploader(
-        "Multiple File Uploader",
-        accept_multiple_files=True,
-        type=["csv"]
-    )
-    count=0
-    if multiple_files is not None:
-        df = pd.DataFrame()
-        dataframe = []
-        for file in multiple_files:
-            data = io.BytesIO(file.getbuffer())
-            st.write(file.name)
-            dj = pd.read_csv(data)
-            dataframe.append(dj)
-            st.write(dj.head(3))
+        multiple_files = st.file_uploader(
+            "Multiple File Uploader",
+            accept_multiple_files=True,
+            type=["csv"]
+        )
+        count=0
+        if multiple_files is not None:
+            df = pd.DataFrame()
+            dataframe = []
+            for file in multiple_files:
+                data = io.BytesIO(file.getbuffer())
+                st.write(file.name)
+                dj = pd.read_csv(data)
+                dataframe.append(dj)
+                st.write(dj.head(3))
 
-        if 'generated' not in st.session_state:
-            st.session_state['generated'] = []
-        if 'past' not in st.session_state:
-            st.session_state['past'] = []
-        
-        user_input = get_question()
-        if user_input:
-            response, flag = template_approach(user_input,dataframe[0])
+            if 'generated' not in st.session_state:
+                st.session_state['generated'] = []
+            if 'past' not in st.session_state:
+                st.session_state['past'] = []
+            
+            user_input = get_question()
+            if user_input:
+                response, flag = template_approach(user_input,dataframe[0])
 
-            if flag:
-                format_response = question_analyiser(user_input)
-                columns = get_columns(user_input,dataframe[0])
-                answer = get_response(generated=response,question=user_input,format=format_response)
-                st.write(answer)
-                st.write(explainer(question=user_input,answer=answer,columns=columns))
-
-            else:
-                pandas_response = pandas_ai.run(dataframe,prompt=user_input)
-                if len(pandas_response) >=2:
+                if flag:
                     format_response = question_analyiser(user_input)
-                    columns = get_columns(user_input,dataframe)
-                    answer = get_response(generated=pandas_response,question=user_input,format=format_response)
+                    columns = get_columns(user_input,dataframe[0])
+                    answer = get_response(generated=response,question=user_input,format=format_response)
                     st.write(answer)
                     st.write(explainer(question=user_input,answer=answer,columns=columns))
 
                 else:
-                    st.write("Can you rephrase the question so that I can provide you the answer")
+                    pandas_response = pandas_ai.run(dataframe,prompt=user_input)
+                    if len(pandas_response) >=2:
+                        format_response = question_analyiser(user_input)
+                        columns = get_columns(user_input,dataframe)
+                        answer = get_response(generated=pandas_response,question=user_input,format=format_response)
+                        st.write(answer)
+                        st.write(explainer(question=user_input,answer=answer,columns=columns))
+
+                    else:
+                        st.write("Can you rephrase the question so that I can provide you the answer")
 
 
 
