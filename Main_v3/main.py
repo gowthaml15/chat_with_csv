@@ -149,7 +149,6 @@ def main():
                 st.write(explainer(question=user_input,answer=answer,columns=columns))
 
             else:
-                st.write("else")
                 pandas_response = pandas_ai.run(dataframe,prompt=user_input)
                 if len(pandas_response) >=2:
                     format_response = question_analyiser(user_input)

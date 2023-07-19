@@ -32,7 +32,7 @@ def template_based_approach(question,df):
         Steps to be followed:
         {steps}
 
-        Using the provided dataframe and steps, df, return the python function code in the below format: 
+        Using the provided dataframe and steps, df, return the python function code with neccessary import modules in the below format: 
         def ploting(dataframe) calling the function and return as response and store that in result variable
         Your answer to the following question:
         {question}
