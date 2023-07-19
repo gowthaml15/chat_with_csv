@@ -22,8 +22,6 @@ def get_llm(key):
     return llms
 
 def generate_answer(llms,question,destination_path,history):
-    data = pd.read_csv(destination_path)
-    st.write(data.head(3))
     prompt = """The following is a friendly conversation between a human and an AI. The AI is a data analyst, you have been assigned the task of analyzing a dataset and providing insightful findings and recommendations based on your analysis. Summarize your key insights and recommendations in a clear and concise manner, avoiding technical jargon or specific programming code.
 
     If the AI does not know the answer to a question, it truthfully says it does not know. The AI ONLY uses information contained in the "Relevant Information" section and does not hallucinate.
@@ -44,6 +42,17 @@ def generate_answer(llms,question,destination_path,history):
 
 def get_question():
     return st.text_input("Talk to the bot",key="input_text")
+
+def preprocessing(file_path):
+    df = pd.read_csv(file_path)
+    date_column_list = ["date"]
+    for i in df.columns:
+        for j in date_column_list:
+            if j in i.lower():
+                df[['Date', 'Time']] = df['Purchase Date'].str.split(' ', expand=True)
+                df[i] = pd.to_datetime(df['Date'],format='%d/%m/%Y')
+                df = df.drop('Date',axis=1)
+    df.to_csv(file_path)
 
 def get_file(uploaded_file):
 
@@ -78,7 +87,10 @@ def main():
         uploaded_file = st.file_uploader("Upload your CSV file",type="csv")
         if uploaded_file:
             destination_path = get_file(uploaded_file)
-
+            preprocessing(destination_path)
+            st.write(destination_path.split('/')[-1])
+            st.write(pd.read_csv(destination_path).head(3))
+            
             if 'generated' not in st.session_state:
                 st.session_state['generated'] = []
             if 'past' not in st.session_state:
@@ -99,7 +111,7 @@ def main():
                         message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
 
                 
-                # print(st.session_state.past,st.session_state.generated)
+                
 
 
 if __name__ == "__main__":
