@@ -3,3 +3,5 @@ pandasai
 openai
 tabulate
 streamlit-chat
+streamlit
+pandas
