@@ -1,0 +1,27 @@
+# Use a base image
+FROM python:3.10
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Update the package lists and install necessary dependencies
+# RUN apt-get update && apt-get install -y \
+#     pip
+
+# Install pip3
+RUN pip install  --upgrade pip
+
+# Copy the requirements.txt file to the container
+COPY requirements.txt .
+
+# Install the Python dependencies
+RUN pip install -r requirements.txt
+
+# Copy the content of the current directory to the container5
+COPY . .
+
+# Expose the port on which the app will run
+EXPOSE 8501
+
+# Set the command to run the Streamlit app when the container starts
+CMD ["streamlit", "run", "main.py"]

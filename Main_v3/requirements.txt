@@ -1,5 +1,6 @@
 langchain 
 openai
+pandasai==0.6.5
 tabulate
 streamlit-chat
 streamlit
