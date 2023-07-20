@@ -31,7 +31,6 @@ def template_approach(user_input,dataframe):
     code_generation = template_based_approach(user_input,dataframe)
     response =""
     flag = False
-    # openai.api_key  = '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'
     if len(code_generation) > 2:
         completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo", # this is "ChatGPT" $0.002 per 1k tokens
@@ -41,9 +40,9 @@ def template_approach(user_input,dataframe):
 
         # Create the namespace with the required variables
         namespace = {"df": dataframe}
-
-        custom_exec(string, namespace)
         print(string)
+        custom_exec(string, namespace)
+        
         # Access the total_revenue value
         response = namespace.get("result")
         if len(str(response))>5:
@@ -109,6 +108,7 @@ def main():
     st.header("Ask you CSV")
     open_ai_key = st.text_input("Enter Open AI Key")
     if open_ai_key:
+        os.environ['OPENAI_API_KEY'] = open_ai_key
         openai.api_key = open_ai_key
 
         llm = OpenAI(temperature=0)
@@ -142,7 +142,7 @@ def main():
             user_input = get_question()
             if user_input:
                 response, flag = template_approach(user_input,dataframe[0])
-
+                print(f'flag:{flag}\nresponse:{response}')
                 if flag:
                     format_response = question_analyiser(user_input)
                     columns = get_columns(user_input,dataframe[0])
