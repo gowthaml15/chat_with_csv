@@ -11,7 +11,7 @@ import datetime
 from dotenv import load_dotenv, find_dotenv
 from langchain.agents import create_csv_agent
 from langchain.llms import OpenAI
-from pandasai import PandasAI
+from pandasai import PandasAI, OpenAI
 from streamlit_chat import message
 from langchain.chains import ConversationChain
 from langchain.chains.conversation.memory import ConversationBufferMemory,ConversationSummaryBufferMemory
@@ -76,7 +76,7 @@ open_ai_key = st.text_input("Enter Open AI Key")
 if open_ai_key:
     openai.api_key = open_ai_key
     
-    llm = OpenAI(temperature=0,openai_api_key=open_ai_key)
+    llm = OpenAI(model = "gpt-3.5-turbo",temperature=0,openai_api_key=open_ai_key)
     pandas_ai = PandasAI(llm,verbose=True,enable_cache=False)
 
 
@@ -99,7 +99,6 @@ if open_ai_key:
             
             dj = pd.read_csv(data)
             dj = preprocessing(dj)
-            # dj = pandas_ai.clean_data(dj)
             dataframe.append(dj)
             st.write(dj.head(3))
 
@@ -112,23 +111,24 @@ if open_ai_key:
         if user_input:
 
             if "plot" in user_input.lower():
-                print("inside plotting")
-                st.write(pandas_ai.run(dj,prompt="remove indexes while reporting "+user_input))
+                st.write(pandas_ai.run(dj,prompt="As a data analyst bot you have to report to the question, give if the answer if it is in money realted with no more than 2 precision:"+user_input))
                 
             else:
-                pandas_response = pandas_ai.run(dataframe,prompt="Give me a detailed answer with columns involving with the columns and remove indexes while reporting"+user_input)
+                pandas_response = pandas_ai.run(dataframe,prompt=user_input)
 
                 answer = get_response(llm,pandas_response,user_input)
+                st.write(pandas_response)
+                st.write(answer)
 
 
-                st.session_state.past.append(user_input)
-                st.session_state.generated.append(answer)
+                # st.session_state.past.append(user_input)
+                # st.session_state.generated.append(answer)
 
-                if st.session_state['generated']:
+                # if st.session_state['generated']:
 
-                    for i in range(len(st.session_state['generated'])-1, -1, -1):
-                        message(st.session_state["generated"][i],is_table=True, key=str(i))
-                        message(st.session_state['past'][i], is_user=True,is_table=True, key=str(i) + '_user')
+                #     for i in range(len(st.session_state['generated'])-1, -1, -1):
+                #         message(st.session_state["generated"][i],is_table=True, key=str(i))
+                #         message(st.session_state['past'][i], is_user=True,is_table=True, key=str(i) + '_user')
 
 
 
